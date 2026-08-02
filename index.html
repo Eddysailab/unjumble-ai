@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Unjumble AI — Learn the language of AI, by Eddy's AI Lab</title>
+  <meta name="description" content="Unjumble AI is a free word puzzle that teaches you the words everyone uses about AI. Unscramble the term, then learn what it actually means. By Eddy's AI Lab." />
+  <meta name="theme-color" content="#EEF5E4" />
+
+  <!-- Open Graph / social -->
+  <meta property="og:title" content="Unjumble AI — can you unscramble the language of AI?" />
+  <meta property="og:description" content="A free word puzzle that teaches you what AI people are actually talking about. By Eddy's AI Lab." />
+  <meta property="og:type" content="website" />
+
+  <!-- Fonts are optional. A strong system fallback is set in CSS, so the game
+       still works fully offline if these do not load. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- Drifting letters atmosphere layer (disabled under reduced motion) -->
+  <div id="bg-letters" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div id="brandbar" class="brandbar"></div>
+    <div class="topright">
+      <button id="sound-toggle" class="pill-toggle" type="button" aria-label="Turn sound on or off"></button>
+      <button id="theme-toggle" class="pill-toggle" type="button" aria-label="Switch color theme"></button>
+    </div>
+  </header>
+
+  <!-- Score strip. Hidden on the welcome screen. -->
+  <div id="hud" class="hud" hidden aria-label="Your progress"></div>
+
+  <!-- All screens render here -->
+  <main id="screen" class="screen" role="main"></main>
+
+  <footer class="sitefoot">
+    <span>Unjumble AI, a free game by <a href="https://www.eddysailab.com" target="_blank" rel="noopener">Eddy's AI Lab</a>.</span>
+  </footer>
+
+  <!-- Load order matters: config and data first, then systems, then app. -->
+  <script src="js/config.js"></script>
+  <script src="js/data/categories.js"></script>
+  <script src="js/data/terms.js"></script>
+  <script src="js/data/copy.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/fx.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      UNJUMBLE.app.init();
+    });
+  </script>
+</body>
+</html>
