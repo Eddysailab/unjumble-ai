@@ -83,6 +83,11 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     actions.appendChild(clearBtn);
     card.appendChild(actions);
 
+    // Say up front what a hint costs, so the choice is never a surprise.
+    card.appendChild(el("p", "puz-cost", null, {
+      text: C.revealCostNote.replace("{n}", cfg.POINTS.perRevealCost)
+    }));
+
     var revealCard = el("div", "reveal-card");
     card.appendChild(revealCard);
 
@@ -293,6 +298,11 @@ window.UNJUMBLE = window.UNJUMBLE || {};
 
       var pts = el("div", "rv-points");
       pts.appendChild(el("span", "rv-pt", "+" + points + " points"));
+      if (revealsUsed > 0) {
+        pts.appendChild(el("span", "rv-cost",
+          '<span class="ui-ic">' + icon("light-bulb") + '</span>' +
+          revealsUsed + " revealed, minus " + (revealsUsed * cfg.POINTS.perRevealCost) + " percent"));
+      }
       if (streakBonus > 0) {
         pts.appendChild(el("span", "rv-streak",
           '<span class="ui-ic">' + icon("fire-flame") + '</span>' + streakBonus + " streak bonus"));

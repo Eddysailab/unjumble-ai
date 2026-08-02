@@ -47,8 +47,8 @@ nothing is loaded from the internet.
 6. Solved? They get the word's **meaning** and a **real life example**, plus
    points and a streak.
 
-Points are 100 per word, minus 20 for each letter revealed, never below 20,
-plus a small streak bonus. You can change all of those numbers in
+Points are 100 per word, minus 2 percent for each letter revealed, never
+below 20, plus a small streak bonus. You can change all of those numbers in
 `js/config.js`.
 
 ---

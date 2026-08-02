@@ -52,8 +52,8 @@ UNJUMBLE.config = {
      SCORING (kept gentle on purpose, there are no lives and no way to lose)
   -------------------------------------------------------------------------- */
   POINTS: {
-    solve: 100,          // points for solving a term
-    perRevealCost: 20,   // taken off for each letter you reveal
+    solve: 100,          // a word is worth 100 percent if you get it unaided
+    perRevealCost: 2,    // each letter you reveal costs 2 percent of that 100
     minimum: 20,         // you always keep at least this much
     streakBonus: 10      // extra points per term in your current streak
   },

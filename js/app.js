@@ -14,7 +14,7 @@ window.UNJUMBLE = window.UNJUMBLE || {};
 
   var screen, hud, brandbar, themeBtn, soundBtn;
   var session = null;        // { category, list, index }
-  var sinceNudge = 0;        // words solved since the mascot last showed up
+  var sinceNudge = 0;        // words solved since the last encouragement screen
   var lastNudge = -1;        // so he does not repeat the same line twice running
 
   /* ------------------------------- setup ------------------------------- */
@@ -239,19 +239,19 @@ window.UNJUMBLE = window.UNJUMBLE || {};
       next: function () {
         session.index++;
         if (session.index >= session.list.length) { showPackDone(); return; }
-        // The mascot drops in between words, but only now and then.
+        // A short encouragement screen drops in, but only now and then.
         if (shouldNudge()) showNudge(showPuzzle);
         else showPuzzle();
       }
     });
   }
 
-  /* --------------------- screen: the mascot's nudge --------------------
-     He shows up between words to say the player is doing well and to point
-     at what is still locked. He is deliberately rationed: never before the
-     player has some momentum, never twice close together, and only about a
-     third of the time even when he is allowed. That works out at roughly
-     three appearances across a twenty word pack.
+  /* ---------------------- screen: the encouragement --------------------
+     A short screen between words telling the player they are doing well and
+     pointing at what is still locked. It is deliberately rationed: never
+     before the player has some momentum, never twice close together, and
+     only about a third of the time even when allowed. That works out at
+     two to four appearances across a twenty word pack.
   --------------------------------------------------------------------- */
   function shouldNudge() {
     if (!session) return false;
@@ -311,7 +311,7 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     lastNudge = i;
 
     var wrap = el("div", "nudge fade-up");
-    wrap.appendChild(el("div", "mascot-wrap", UNJUMBLE.mascot({ size: 186 })));
+    wrap.appendChild(el("div", "nudge-badge", icon("fire-flame", { size: 34 })));
     wrap.appendChild(el("h2", "nudge-title", null, { text: C.nudges[i] }));
     wrap.appendChild(el("p", "nudge-sub", null, { text: nudgeProgressLine() }));
 
@@ -388,7 +388,6 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     UNJUMBLE.confetti(140);
 
     var wrap = el("div", "hero fade-up");
-    wrap.appendChild(el("div", "mascot-wrap", UNJUMBLE.mascot({ size: 170 })));
     wrap.appendChild(el("div", "hero-badge",
       '<span class="ui-ic">' + icon("trophy") + '</span>Every word solved'));
     wrap.appendChild(el("h1", "hero-title", null, { text: C.finishTitle }));

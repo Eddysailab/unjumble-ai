@@ -535,6 +535,10 @@ a { color: var(--cyan-deep); font-weight: 800; }
 
 .puz-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
 .puz-actions .btn { font-size: 14.5px; padding: 11px 18px; }
+.puz-cost {
+  text-align: center; color: var(--muted);
+  font-size: 12.5px; font-weight: 700; margin: 12px 0 0;
+}
 
 /* ---------------------- The payoff, after solving ------------------------ */
 .reveal-card { display: none; }
@@ -563,16 +567,17 @@ a { color: var(--cyan-deep); font-weight: 800; }
   margin: 6px 0 8px;
 }
 .rv-points { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 16px; }
-.rv-pt, .rv-streak {
+.rv-pt, .rv-streak, .rv-cost {
   display: inline-flex; align-items: center; gap: 5px;
   border-radius: 999px; padding: 4px 12px;
   font-size: 12.5px; font-weight: 800;
 }
 .rv-pt { background: color-mix(in srgb, var(--green) 16%, var(--panel)); color: var(--green-deep); }
 .rv-streak { background: color-mix(in srgb, var(--amber) 18%, var(--panel)); color: var(--amber-deep); }
+.rv-cost { background: var(--panel-2); color: var(--muted); }
 :root[data-theme="dark"] .rv-pt { color: var(--green); }
 :root[data-theme="dark"] .rv-streak { color: var(--amber); }
-.rv-pt .ic, .rv-streak .ic { width: 14px; height: 14px; }
+.rv-pt .ic, .rv-streak .ic, .rv-cost .ic { width: 14px; height: 14px; }
 
 .rv-block {
   background: var(--panel-2);
@@ -590,58 +595,25 @@ a { color: var(--cyan-deep); font-weight: 800; }
 .rv-label .ic { width: 14px; height: 14px; }
 .rv-body { margin: 7px 0 0; font-size: 15px; line-height: 1.6; font-weight: 700; }
 
-/* ================================ MASCOT ================================
-   He waves, he blinks, and his head rocks gently from side to side. Each
-   part moves on its own timing so the whole thing never looks like a loop.
-   All of it is switched off under prefers-reduced-motion, further down.
+/* ========================= ENCOURAGEMENT SCREEN =========================
+   The short "you are doing well, keep going" screen shown between words.
    ======================================================================== */
-.mascot-wrap { display: flex; justify-content: center; margin-bottom: 4px; }
-.mascot { display: block; overflow: visible; }
-
-/* SVG transforms need an explicit box to measure against. */
-.mascot-head, .mascot-wave, .mascot-eye, .mascot-bits { transform-box: view-box; }
-
-/* The head rocks left and right, pivoting where it meets the body. */
-.mascot-head {
-  transform-origin: 100px 96px;
-  animation: mascotSway 3.6s ease-in-out infinite;
-}
-@keyframes mascotSway {
-  0%, 100% { transform: rotate(-3.2deg); }
-  50%      { transform: rotate(3.2deg); }
-}
-
-/* The raised arm waves from the shoulder. */
-.mascot-wave {
-  transform-origin: 138px 124px;
-  animation: mascotWave 1.7s ease-in-out infinite;
-}
-@keyframes mascotWave {
-  0%, 100% { transform: rotate(-7deg); }
-  50%      { transform: rotate(14deg); }
-}
-
-/* A blink: the eyes squash flat for a moment, then open again. */
-.mascot-eye { animation: mascotBlink 4.6s ease-in-out infinite; }
-@keyframes mascotBlink {
-  0%, 88%, 100% { transform: scaleY(1); }
-  92%           { transform: scaleY(0.08); }
-  96%           { transform: scaleY(1); }
-}
-/* The second eye inherits the same timing, so both blink together. */
-
-/* The jumbled letters on his chest breathe very slightly. */
-.mascot-bits {
-  transform-origin: 100px 137px;
-  animation: mascotBits 5.2s ease-in-out infinite;
-}
-@keyframes mascotBits {
-  0%, 100% { transform: scale(1); }
-  50%      { transform: scale(1.045); }
-}
-
-/* --------------------------- The nudge screen --------------------------- */
 .nudge { text-align: center; display: flex; flex-direction: column; align-items: center; }
+.nudge-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 76px; height: 76px; margin-bottom: 16px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--green) 16%, var(--panel));
+  border: 3px solid var(--green);
+  color: var(--green-deep);
+  box-shadow: var(--shadow-card);
+  animation: nudgePop .45s var(--bounce) both;
+}
+:root[data-theme="dark"] .nudge-badge { color: var(--green); }
+@keyframes nudgePop {
+  from { opacity: 0; transform: scale(.6); }
+  to   { opacity: 1; transform: scale(1); }
+}
 .nudge-title {
   font-family: var(--font-display); font-weight: 700;
   font-size: 26px; line-height: 1.2; margin: 10px 0 8px; max-width: 15em;
@@ -751,7 +723,7 @@ a { color: var(--cyan-deep); font-weight: 800; }
   .clue-text { font-size: 17px; }
   .stat-tile { min-width: 92px; padding: 12px 16px; }
   .nudge-title { font-size: 23px; }
-  .mascot { width: 160px; height: 160px; }
+
 }
 
 /* Very long terms need to stay on screen on small phones. */
