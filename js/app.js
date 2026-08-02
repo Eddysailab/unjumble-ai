@@ -13,7 +13,9 @@ window.UNJUMBLE = window.UNJUMBLE || {};
   var icon = UNJUMBLE.icon;
 
   var screen, hud, brandbar, themeBtn, soundBtn;
-  var session = null;   // { category, list, index }
+  var session = null;        // { category, list, index }
+  var sinceNudge = 0;        // words solved since the mascot last showed up
+  var lastNudge = -1;        // so he does not repeat the same line twice running
 
   /* ------------------------------- setup ------------------------------- */
   function init() {
@@ -205,6 +207,7 @@ window.UNJUMBLE = window.UNJUMBLE || {};
       if (!UNJUMBLE.state.isSolved(list[i])) { start = i; break; }
     }
     session = { category: categoryId, list: list, index: start };
+    sinceNudge = 0;
     showPuzzle();
   }
 
@@ -235,10 +238,93 @@ window.UNJUMBLE = window.UNJUMBLE || {};
       onMiss: function () { renderHud(true); },
       next: function () {
         session.index++;
-        if (session.index >= session.list.length) showPackDone();
+        if (session.index >= session.list.length) { showPackDone(); return; }
+        // The mascot drops in between words, but only now and then.
+        if (shouldNudge()) showNudge(showPuzzle);
         else showPuzzle();
       }
     });
+  }
+
+  /* --------------------- screen: the mascot's nudge --------------------
+     He shows up between words to say the player is doing well and to point
+     at what is still locked. He is deliberately rationed: never before the
+     player has some momentum, never twice close together, and only about a
+     third of the time even when he is allowed. That works out at roughly
+     three appearances across a twenty word pack.
+  --------------------------------------------------------------------- */
+  function shouldNudge() {
+    if (!session) return false;
+    var i = session.index;                       // the word about to be shown
+    if (i <= 1 || i >= session.list.length) return false;
+
+    sinceNudge++;
+    var halfway = Math.floor(session.list.length / 2);
+
+    // Always mark the halfway point of a pack, if he has been quiet a while.
+    if (i === halfway && sinceNudge >= 3) return true;
+    // Otherwise, occasionally, and never fewer than four words apart.
+    if (sinceNudge >= 4 && Math.random() < 0.34) return true;
+    return false;
+  }
+
+  // A line about where the player actually is, under the headline.
+  function nudgeProgressLine() {
+    var s = UNJUMBLE.state.get();
+    var list = session.list;
+    var done = list.filter(UNJUMBLE.state.isSolved).length;
+    var left = list.length - done;
+
+    var cat = UNJUMBLE.categories.filter(function (c) { return c.id === session.category; })[0];
+    var next = UNJUMBLE.categories[UNJUMBLE.categories.indexOf(cat) + 1];
+
+    // Nearly done with the pack beats everything else, it is the best push.
+    if (left > 0 && left <= 3) {
+      return "Only " + left + " word" + (left === 1 ? "" : "s") + " left in this pack.";
+    }
+
+    // Otherwise gather everything true right now and pick one, so a player on
+    // a long clean run does not read the same sentence every single time.
+    var options = [];
+    if (s.streak >= 5) {
+      options.push(s.streak + " in a row. Every one you get without a reveal is worth more.");
+    }
+    if (next && !UNJUMBLE.state.isCategoryUnlocked(next.id)) {
+      options.push("Finish this pack and you unlock " + next.title + ".");
+    }
+    options.push(done + " of " + list.length + " done in this pack, and " +
+                 UNJUMBLE.state.totalSolved() + " of " + UNJUMBLE.terms.length + " overall.");
+    options.push(left + " more and this pack is yours.");
+
+    return options[Math.floor(Math.random() * options.length)];
+  }
+
+  function showNudge(afterFn) {
+    sinceNudge = 0;
+    clear(screen);
+    renderHud(true);
+
+    var C = UNJUMBLE.copy;
+    // Pick a line, but not the one he used last time.
+    var i = Math.floor(Math.random() * C.nudges.length);
+    if (C.nudges.length > 1 && i === lastNudge) i = (i + 1) % C.nudges.length;
+    lastNudge = i;
+
+    var wrap = el("div", "nudge fade-up");
+    wrap.appendChild(el("div", "mascot-wrap", UNJUMBLE.mascot({ size: 186 })));
+    wrap.appendChild(el("h2", "nudge-title", null, { text: C.nudges[i] }));
+    wrap.appendChild(el("p", "nudge-sub", null, { text: nudgeProgressLine() }));
+
+    var go = el("button", "btn primary big",
+      C.nudgeBtn + '<span class="btn-ic">' + icon("nav-arrow-right") + '</span>', { type: "button" });
+    go.addEventListener("click", function () {
+      UNJUMBLE.audio.play("click");
+      afterFn();
+    });
+    wrap.appendChild(go);
+
+    screen.appendChild(wrap);
+    go.focus();
   }
 
   /* -------------------------- screen: pack done ------------------------ */
@@ -302,6 +388,7 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     UNJUMBLE.confetti(140);
 
     var wrap = el("div", "hero fade-up");
+    wrap.appendChild(el("div", "mascot-wrap", UNJUMBLE.mascot({ size: 170 })));
     wrap.appendChild(el("div", "hero-badge",
       '<span class="ui-ic">' + icon("trophy") + '</span>Every word solved'));
     wrap.appendChild(el("h1", "hero-title", null, { text: C.finishTitle }));

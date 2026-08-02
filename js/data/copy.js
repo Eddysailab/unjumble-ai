@@ -37,6 +37,27 @@ UNJUMBLE.copy = {
   wrongNudge: "Not that one. Try a different order.",
   allRevealedNote: "Revealed for you. Read it, then move on.",
 
+  /* --------------------------------------------------------------------------
+     THE MASCOT'S NUDGES
+     --------------------------------------------------------------------------
+     He turns up between words now and then to keep the player going. One of
+     these headlines is picked at random each time, so add as many as you like.
+     Keep them short, warm, and never smug.
+  -------------------------------------------------------------------------- */
+  nudgeBtn: "Keep going",
+  nudges: [
+    "You are on a roll.",
+    "Look at you go.",
+    "That is another one you will not forget.",
+    "You are getting quick at this.",
+    "Nice work. Keep it rolling.",
+    "You are building real vocabulary here.",
+    "Every word here is one you will actually hear.",
+    "This is the good stuff. Keep going.",
+    "You are further along than you think.",
+    "Somebody has been paying attention."
+  ],
+
   // Pack complete
   packDoneTitle: "Pack complete",
   packDoneLead: "You just added these words to your vocabulary for good.",
