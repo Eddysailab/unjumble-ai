@@ -44,6 +44,7 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     }
 
     var revealsUsed = 0;
+    var definitionUsed = false;
     var solved = false;
     var busy = false;   // true while the shake animation plays
 
@@ -61,6 +62,12 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     clueBox.appendChild(el("span", "clue-label",
       '<span class="ui-ic">' + icon("light-bulb") + '</span>' + C.clueLabel));
     clueBox.appendChild(el("p", "clue-text", null, { text: term.clue }));
+    // The meaning starts hidden. The player can buy it if the clue is not enough.
+    var meaningBox = el("div", "clue-meaning");
+    meaningBox.appendChild(el("span", "clue-label",
+      '<span class="ui-ic">' + icon("book") + '</span>' + C.defineLabel));
+    meaningBox.appendChild(el("p", "clue-meaning-text", null, { text: term.definition }));
+    clueBox.appendChild(meaningBox);
     card.appendChild(clueBox);
 
     var track = el("div", "track", "", { "aria-label": "Your answer so far" });
@@ -75,17 +82,23 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     var actions = el("div", "puz-actions");
     var revealBtn = el("button", "btn ghost",
       '<span class="btn-ic">' + icon("light-bulb") + '</span>' + C.revealBtn, { type: "button" });
+    var defineBtn = el("button", "btn ghost",
+      '<span class="btn-ic">' + icon("book") + '</span>' + C.defineBtn, { type: "button" });
     var clearBtn = el("button", "btn ghost",
       '<span class="btn-ic">' + icon("refresh-double") + '</span>' + C.clearBtn, { type: "button" });
     revealBtn.addEventListener("click", reveal);
+    defineBtn.addEventListener("click", showMeaning);
     clearBtn.addEventListener("click", clearBoard);
     actions.appendChild(revealBtn);
+    actions.appendChild(defineBtn);
     actions.appendChild(clearBtn);
     card.appendChild(actions);
 
-    // Say up front what a hint costs, so the choice is never a surprise.
+    // Say up front what each hint costs, so the choice is never a surprise.
     card.appendChild(el("p", "puz-cost", null, {
-      text: C.revealCostNote.replace("{n}", cfg.POINTS.perRevealCost)
+      text: C.revealCostNote
+        .replace("{n}", cfg.POINTS.perRevealCost)
+        .replace("{d}", cfg.POINTS.definitionCost)
     }));
 
     var revealCard = el("div", "reveal-card");
@@ -237,6 +250,19 @@ window.UNJUMBLE = window.UNJUMBLE || {};
       if (firstEmpty() === -1) check();
     }
 
+    // Buy the meaning. For a beginner this is often the difference between
+    // guessing blindly at letters and actually recognising the word.
+    function showMeaning() {
+      if (solved || definitionUsed) return;
+      definitionUsed = true;
+      clueBox.classList.add("with-meaning");
+      defineBtn.disabled = true;
+      UNJUMBLE.audio.play("reveal");
+      meaningBox.scrollIntoView({
+        behavior: UNJUMBLE.reducedMotion() ? "auto" : "smooth", block: "nearest"
+      });
+    }
+
     function setNudge(text) {
       nudge.textContent = text || "";
       nudge.classList.toggle("show", !!text);
@@ -267,13 +293,15 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     function win() {
       solved = true;
       var P = cfg.POINTS;
-      var base = Math.max(P.minimum, P.solve - revealsUsed * P.perRevealCost);
+      var spent = revealsUsed * P.perRevealCost + (definitionUsed ? P.definitionCost : 0);
+      var base = Math.max(P.minimum, P.solve - spent);
       var streakBonus = Math.min(UNJUMBLE.state.get().streak, 5) * P.streakBonus;
       var points = base + streakBonus;
 
       setNudge("");
       render();
       revealBtn.disabled = true;
+      defineBtn.disabled = true;
       clearBtn.disabled = true;
 
       UNJUMBLE.audio.play("win");
@@ -302,6 +330,11 @@ window.UNJUMBLE = window.UNJUMBLE || {};
         pts.appendChild(el("span", "rv-cost",
           '<span class="ui-ic">' + icon("light-bulb") + '</span>' +
           revealsUsed + " revealed, minus " + (revealsUsed * cfg.POINTS.perRevealCost) + " percent"));
+      }
+      if (definitionUsed) {
+        pts.appendChild(el("span", "rv-cost",
+          '<span class="ui-ic">' + icon("book") + '</span>' +
+          "meaning used, minus " + cfg.POINTS.definitionCost + " percent"));
       }
       if (streakBonus > 0) {
         pts.appendChild(el("span", "rv-streak",

@@ -29,8 +29,10 @@ UNJUMBLE.copy = {
   clueLabel: "The clue",
   revealBtn: "Reveal a letter",
   clearBtn: "Clear",
-  // {n} is filled in from POINTS.perRevealCost in config.js
-  revealCostNote: "Each letter you reveal costs {n} percent. Use as many as you need.",
+  defineBtn: "What does it mean?",
+  defineLabel: "The meaning",
+  // {n} and {d} are filled in from POINTS in config.js
+  revealCostNote: "A letter costs {n} percent, the meaning costs {d}. Use as many as you need.",
   solvedHead: "You got it",
   meansLabel: "What it means",
   exampleLabel: "In real life",

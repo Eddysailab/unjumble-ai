@@ -174,10 +174,10 @@ UNJUMBLE.terms = [
     icon: "check-circle"
   },
   {
-    term: "SPEECH RECOGNITION",
-    clue: "Turning the sound of talking into text.",
-    definition: "Technology that converts spoken words into written text a computer can work with.",
-    example: "The live captions on a video call are produced by speech recognition.",
+    term: "CAPTIONS",
+    clue: "The words that appear as people speak.",
+    definition: "Text produced automatically from speech, so you can read what is being said as it happens.",
+    example: "The live subtitles on a video call are AI listening to the speaker and writing it down.",
     category: "basics",
     icon: "headset"
   },
@@ -265,26 +265,26 @@ UNJUMBLE.terms = [
     icon: "list"
   },
   {
-    term: "UNDERFITTING",
-    clue: "It never really learned the lesson at all.",
-    definition: "When a model is too simple to capture what is going on, so it does poorly even on its own training examples.",
-    example: "Trying to predict house prices from floor area alone will underfit, because price depends on much more.",
+    term: "EXAMPLE",
+    clue: "One single item out of the pile it studies.",
+    definition: "A single item of training data, such as one photo or one email, that a model learns from.",
+    example: "Ten thousand photos of cats means ten thousand examples to learn from.",
     category: "ml",
-    icon: "book"
+    icon: "task-list"
   },
   {
-    term: "MODEL DRIFT",
-    clue: "It was right last year. The world moved.",
-    definition: "When a model gets worse over time because the real world has changed but the model has not been retrained.",
-    example: "A shopping model trained before a trend shifted will keep recommending what people wanted last season.",
+    term: "RETRAIN",
+    clue: "Teaching it again, because the world moved on.",
+    definition: "Training a model a second time on newer data, because what it learned has gone out of date.",
+    example: "A shopping model trained before a trend shifted has to be retrained to stay useful.",
     category: "ml",
     icon: "refresh-double"
   },
   {
-    term: "CLUSTERING",
-    clue: "Finding the natural groups nobody named.",
-    definition: "Sorting data into groups of similar items without anyone deciding the groups in advance.",
-    example: "A shop discovering it has three distinct types of regular customer, without being told to look, is clustering.",
+    term: "GROUP",
+    clue: "Putting the similar things together.",
+    definition: "Sorting items into sets of similar things, often without anyone deciding the sets in advance.",
+    example: "A shop discovering it has three types of regular customer, without being told to look, is grouping.",
     category: "ml",
     icon: "community"
   },
@@ -313,10 +313,10 @@ UNJUMBLE.terms = [
     icon: "check-circle"
   },
   {
-    term: "REGRESSION",
-    clue: "Predicting a number, not a category.",
-    definition: "A task where a model predicts a quantity, such as a price or a temperature, rather than a label.",
-    example: "Estimating what a house will sell for is regression. Deciding if an email is spam is not.",
+    term: "SCORE",
+    clue: "The number that says how well it did.",
+    definition: "A number measuring how well a model performed on a test, used to compare one version against another.",
+    example: "If the new version scores higher on the same set of questions, it is the better model.",
     category: "ml",
     icon: "calculator"
   },
@@ -345,12 +345,12 @@ UNJUMBLE.terms = [
     icon: "brain"
   },
   {
-    term: "GENERALIZE",
-    clue: "Handling new cases it was never shown.",
-    definition: "A model's ability to work well on fresh, unseen examples, which is the whole point of training one.",
-    example: "A model that only recognizes the exact photos it trained on has failed to generalize.",
+    term: "MISTAKE",
+    clue: "The thing it actually learns the most from.",
+    definition: "A wrong answer during training. Models improve by measuring how wrong they were and adjusting.",
+    example: "Every wrong guess nudges the model a little closer to being right next time.",
     category: "ml",
-    icon: "sparks"
+    icon: "xmark-circle"
   },
 
   /* ========================= GENERATIVE AI ========================= */
@@ -380,18 +380,18 @@ UNJUMBLE.terms = [
     icon: "edit-pencil"
   },
   {
-    term: "EMBEDDING",
-    clue: "Turning meaning itself into numbers.",
-    definition: "A way of representing text or images as a list of numbers, so that things with similar meaning end up close together.",
-    example: "This is why searching for 'car' can also bring back results about automobiles.",
+    term: "SUMMARY",
+    clue: "The long thing, made short.",
+    definition: "A shortened version of a longer text, and one of the most common everyday uses of AI.",
+    example: "Pasting in a ten page report and asking for five bullet points gives you a summary.",
     category: "genai",
-    icon: "calculator"
+    icon: "task-list"
   },
   {
-    term: "DIFFUSION",
-    clue: "Starting from static and sculpting a picture out of it.",
-    definition: "An image generation method that starts with random noise and repeatedly cleans it up until a picture appears.",
-    example: "Most AI image tools build your picture this way, refining noise step by step until it looks like what you asked for.",
+    term: "IMAGE",
+    clue: "Describe it in words, get a picture back.",
+    definition: "A picture generated by AI from a written description, rather than drawn or photographed.",
+    example: "Typing 'a red bicycle in the rain' and getting a picture back is image generation.",
     category: "genai",
     icon: "sparks"
   },
@@ -420,12 +420,12 @@ UNJUMBLE.terms = [
     icon: "face-id"
   },
   {
-    term: "INFERENCE",
-    clue: "The moment it actually answers you.",
-    definition: "Running a trained model to get an answer. Training happens once, but this happens every single time you use it.",
-    example: "Every message you send a chatbot triggers inference on a server somewhere.",
+    term: "TRANSLATE",
+    clue: "Same meaning, different language.",
+    definition: "Turning text or speech from one language into another, something AI now does almost instantly.",
+    example: "Pointing your phone at a menu abroad and reading it back in your own language.",
     category: "genai",
-    icon: "play"
+    icon: "chat-bubble"
   },
   {
     term: "AGENT",
@@ -460,12 +460,12 @@ UNJUMBLE.terms = [
     icon: "brain"
   },
   {
-    term: "TRANSFORMER",
-    clue: "The design that made all of this possible.",
-    definition: "The neural network architecture behind modern language models, able to weigh how words relate across a whole passage.",
-    example: "The T in GPT stands for this, and it is why models handle long sentences so well.",
+    term: "AVATAR",
+    clue: "A digital stand in for a real person.",
+    definition: "A generated character that can speak and move on screen, standing in for a person who was never filmed.",
+    example: "A training video presented by a face that never existed is using an avatar.",
     category: "genai",
-    icon: "code"
+    icon: "face-id"
   },
   {
     term: "SYNTHETIC",
@@ -476,20 +476,20 @@ UNJUMBLE.terms = [
     icon: "sparks"
   },
   {
-    term: "GROUNDING",
-    clue: "Tying the answer to a real source.",
-    definition: "Making a model base its answer on supplied documents or data, instead of whatever it absorbed in training.",
-    example: "A bot that answers only from your company handbook, and cites the page, is grounded.",
+    term: "DRAFT",
+    clue: "The rough first go that you then fix.",
+    definition: "A first attempt an AI writes for you, meant to be edited rather than sent as it is.",
+    example: "Asking for a draft email and then rewriting two lines is how most people use AI at work.",
     category: "genai",
-    icon: "book"
+    icon: "edit-pencil"
   },
   {
-    term: "CHAIN OF THOUGHT",
-    clue: "Asking it to work through the steps out loud.",
-    definition: "Getting a model to reason step by step before answering, which improves results on harder problems.",
-    example: "Adding 'work through this step by step' to a tricky question often gets you a better answer.",
+    term: "REWRITE",
+    clue: "Same idea, said better.",
+    definition: "Asking AI to redo a piece of text in a different tone, length, or style.",
+    example: "'Take this blunt email and make it friendlier' is a rewrite.",
     category: "genai",
-    icon: "task-list"
+    icon: "refresh-double"
   },
   {
     term: "COPILOT",
@@ -500,12 +500,12 @@ UNJUMBLE.terms = [
     icon: "user"
   },
   {
-    term: "GUARDED OUTPUT",
-    clue: "The answer, after safety has had a look at it.",
-    definition: "A response that has been filtered or adjusted before it reaches you, to keep it safe and on topic.",
-    example: "If a model drafts something unsafe and the system replaces it with a refusal, you saw guarded output.",
+    term: "VOICE CLONE",
+    clue: "It sounds exactly like someone real.",
+    definition: "A synthetic copy of one particular person's voice, built by training on recordings of them speaking.",
+    example: "An audiobook read in the author's voice, without the author ever being in the room.",
     category: "genai",
-    icon: "lock"
+    icon: "sound-high"
   },
   {
     term: "OPEN SOURCE",
@@ -599,12 +599,12 @@ UNJUMBLE.terms = [
     icon: "lock"
   },
   {
-    term: "EXPLAINABILITY",
-    clue: "Being able to say why it decided that.",
-    definition: "How well a system can show the reasoning behind a particular decision in terms a person understands.",
-    example: "A tool that says which three factors drove a credit decision has explainability.",
+    term: "TRUST",
+    clue: "Earned slowly, lost instantly.",
+    definition: "Confidence that a system will behave as expected, which AI has to earn by being right and being open.",
+    example: "People stop using a tool the moment it confidently hands them a wrong answer.",
     category: "ethics",
-    icon: "light-bulb"
+    icon: "thumbs-up"
   },
   {
     term: "FAIRNESS",
@@ -639,10 +639,10 @@ UNJUMBLE.terms = [
     icon: "lock"
   },
   {
-    term: "ATTRIBUTION",
-    clue: "Saying whose work it came from.",
-    definition: "Crediting the people and sources behind content, which gets murky when a model was trained on their work.",
-    example: "Artists asking to be named when a model imitates their style is an attribution argument.",
+    term: "COPYRIGHT",
+    clue: "Who owns what the machine learned from.",
+    definition: "The legal right over creative work, and one of the biggest open arguments about what AI was trained on.",
+    example: "Artists asking whether their paintings should have been used to train a model is a copyright fight.",
     category: "ethics",
     icon: "edit-pencil"
   },

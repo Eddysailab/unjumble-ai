@@ -40,16 +40,23 @@ nothing is loaded from the internet.
 1. The player picks a pack. Packs unlock in order, one at a time.
 2. A short clue appears, along with the word's letters, scrambled.
 3. They tap the letters in order to spell the word.
-4. Stuck? **Reveal a letter** fills in the next correct letter. It is free
-   and unlimited, it just trims the points for that word.
+4. Stuck? Two hints, both unlimited and both cheap:
+   - **Reveal a letter** fills in the next correct letter.
+   - **What does it mean?** shows the plain English meaning before they
+     solve, which is usually the one that makes the word click.
 5. Wrong order? The letters shake and drop back. Nothing else happens, and
    they can try again straight away.
 6. Solved? They get the word's **meaning** and a **real life example**, plus
    points and a streak.
 
-Points are 100 per word, minus 2 percent for each letter revealed, never
-below 20, plus a small streak bonus. You can change all of those numbers in
-`js/config.js`.
+Points are 100 per word, minus 2 percent for each letter revealed and 10
+percent for the meaning, never below 20, plus a small streak bonus. You can
+change all of those numbers in `js/config.js`.
+
+**Words get harder as you go.** Inside every pack the game orders words by
+length, shortest first, so a pack opens with four and five letter words and
+works up to the long ones. That happens automatically, so any word you add
+slots itself into the right place without you thinking about it.
 
 ---
 

@@ -74,9 +74,26 @@ window.UNJUMBLE = window.UNJUMBLE || {};
       if (s.streak !== 0) { s.streak = 0; save(); }
     },
 
-    // Every term in a category, in the order they appear in terms.js.
+    // How many letters a player actually has to place (spaces are free).
+    letterCount: function (term) {
+      return term.term.replace(/ /g, "").length;
+    },
+
+    /* Every term in a category, easiest first.
+       Short words open a pack and the long ones come last, so a beginner gets
+       a run of quick wins before meeting anything like ACCOUNTABILITY. Length
+       is the honest measure of how hard a word is to unscramble, whatever the
+       idea behind it. Ties keep the order they have in terms.js, so any words
+       you add slot themselves into the ramp automatically. */
     termsIn: function (categoryId) {
-      return UNJUMBLE.terms.filter(function (t) { return t.category === categoryId; });
+      var list = UNJUMBLE.terms.filter(function (t) { return t.category === categoryId; });
+      return list
+        .map(function (t, i) { return { term: t, i: i }; })
+        .sort(function (a, b) {
+          var d = UNJUMBLE.state.letterCount(a.term) - UNJUMBLE.state.letterCount(b.term);
+          return d !== 0 ? d : a.i - b.i;
+        })
+        .map(function (x) { return x.term; });
     },
 
     solvedCountIn: function (categoryId) {

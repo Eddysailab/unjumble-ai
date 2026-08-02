@@ -435,6 +435,19 @@ a { color: var(--cyan-deep); font-weight: 800; }
   font-size: 19px; line-height: 1.4; margin: 8px 0 0;
 }
 
+/* The meaning stays hidden until the player buys it. */
+.clue-meaning { display: none; }
+.clue-box.with-meaning .clue-meaning {
+  display: block;
+  margin-top: 14px; padding-top: 13px;
+  border-top: 2px dashed var(--border-strong);
+  animation: fadeUp .3s ease both;
+}
+.clue-meaning-text {
+  font-size: 14.5px; line-height: 1.6; font-weight: 700;
+  margin: 7px 0 0; color: var(--text);
+}
+
 /* The answer track */
 .track {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
