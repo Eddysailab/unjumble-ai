@@ -74,6 +74,12 @@ UNJUMBLE.copy = {
   emailLabel: "Want more where this came from?",
   emailPlaceholder: "your@email.com",
   emailBtn: "Send it over",
+  emailPrivacy: "We will only email you about AI training. Unsubscribe any time.",
+  emailSending: "Sending...",
   emailThanks: "You are on the list.",
+  // Shown when FORM_ENDPOINT in config.js is still empty. Never thank someone
+  // for joining a list that does not exist.
+  emailNoEndpoint: "Signup is not live yet. Nothing was sent, please check back soon.",
+  emailRetry: "That did not send. Please try again in a moment.",
   playAgain: "Play again from scratch"
 };

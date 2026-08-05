@@ -144,8 +144,14 @@ Open `js/config.js`. The important ones:
 
 ## Collecting emails for real
 
-By default, emails players submit are saved only in their own browser. To
-actually collect them, you paste one link into `js/config.js`.
+> **Until you do this, no email is collected. Ever.**
+> Out of the box `FORM_ENDPOINT` is empty, so there is nowhere for a signup to
+> go. The game does not pretend otherwise: it tells the player "signup is not
+> live yet" instead of thanking them, and prints a warning in the browser
+> console. Nothing is silently lost without a trace, but nothing is captured
+> either. **Do the four steps below before you share the game anywhere.**
+
+To actually collect them, you paste one link into `js/config.js`.
 
 1. Make a free form at **Formspree** (formspree.io), **ConvertKit**, or
    **Mailchimp**. Formspree is the quickest.
@@ -158,7 +164,74 @@ actually collect them, you paste one link into `js/config.js`.
    ```
 
 4. Save and re-upload. Signups now arrive in that form's inbox, along with
-   how many words the player solved and their score.
+   how many words the player solved, their score, and which pack they were on
+   when they signed up.
+
+**How to check it worked:** open the live game, scroll to a signup box, enter
+your own address and submit. You should see "You are on the list." If you see
+"Signup is not live yet", the endpoint is still empty. If you see "That did
+not send", the endpoint is wrong or the service is down.
+
+---
+
+## The share picture
+
+When someone shares the link on WhatsApp, LinkedIn or X, they should see a
+picture, not a bare link. That picture is a file called `og.png` sitting next
+to `index.html`.
+
+**To create or update it:**
+
+1. Open `og.html` (in this folder) in Chrome. It draws the card for you.
+2. Press `F12` to open developer tools.
+3. Press `Ctrl+Shift+P` (`Cmd+Shift+P` on a Mac), type `screenshot`, and pick
+   **Capture node screenshot**, having first clicked the black card.
+4. Save the image as **`og.png`**, right next to `index.html`, and upload it.
+
+It must be exactly **1200 x 630** pixels. `og.html` is already that size, so a
+node screenshot gives you the right dimensions automatically.
+
+To change the wording on the card, edit the text inside `og.html` and repeat.
+
+---
+
+## Seeing how many people play
+
+Nothing is tracked by default. No cookies, no consent banner, nothing loaded.
+
+To switch it on, sign up with **Plausible** (plausible.io) or **Umami**
+(umami.is), both privacy friendly, then fill in the `ANALYTICS` block in
+`js/config.js`. The comments in that file tell you exactly which boxes to
+fill for each service. Leave `provider` empty and nothing is ever loaded.
+
+Once on, you will see these moments in your dashboard:
+
+| Event | What it means |
+| --- | --- |
+| `game_started` | Someone pressed start on the welcome screen |
+| `pack_started` | Someone opened a pack |
+| `word_solved` | Someone solved a word |
+| `pack_completed` | Someone finished a whole pack |
+| `cta_clicked` | Someone clicked through to your site |
+| `email_submitted` | Someone actually joined the list |
+| `result_shared` | Someone shared their score |
+
+The two that matter for the business are `cta_clicked` and `email_submitted`.
+
+---
+
+## Moving to your own web address
+
+The game's address is written in **two** places, and both must match:
+
+1. `SITE_ORIGIN` in `js/config.js`
+2. The `canonical`, `og:url`, `og:image` and `twitter:image` tags near the top
+   of `index.html`
+
+They are in two places because social networks read `index.html` directly
+without running any code, so the address has to be spelled out there. If the
+two ever disagree, the game prints a warning in the browser console telling
+you so.
 
 ---
 

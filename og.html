@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Unjumble AI — social share card (screenshot this at 1200x630)</title>
+<!--
+  ============================================================================
+  THIS FILE EXISTS TO BE SCREENSHOTTED.
+  ----------------------------------------------------------------------------
+  It draws the picture that appears when someone shares the game on WhatsApp,
+  LinkedIn, Facebook or X. Open it in a browser, screenshot the black card at
+  exactly 1200 by 630, and save the result as og.png next to index.html.
+  Full step by step instructions are in README.md under "The share picture".
+
+  Nothing here is loaded by the game itself. It is a design source file.
+  ============================================================================
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0A0A0A;
+    --neon: #39FF14;
+    --white: #FFFFFF;
+    --dim: #8A8F85;
+    --display: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1a1a1a;
+    font-family: var(--body);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 30px 20px; gap: 18px; min-height: 100vh;
+  }
+  .hint {
+    color: #bbb; font-size: 14px; max-width: 1200px; line-height: 1.6;
+    background: #111; border: 1px solid #333; border-radius: 8px; padding: 14px 16px;
+  }
+  .hint b { color: var(--neon); }
+  .hint code { background: #000; padding: 1px 6px; border-radius: 4px; color: #eee; }
+
+  /* The card itself. Exactly the size social networks want. */
+  .card {
+    width: 1200px; height: 630px; flex: 0 0 auto;
+    background: var(--bg);
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 0 88px;
+  }
+
+  /* The dual thin green rules of the brand */
+  .rules { position: absolute; left: 0; right: 0; display: flex; flex-direction: column; gap: 5px; }
+  .rules.top { top: 64px; }
+  .rules.bottom { bottom: 64px; }
+  .rules i { display: block; height: 2px; background: var(--neon); opacity: .85; }
+  .rules i:last-child { opacity: .3; }
+
+  /* Faint scattered letters in the background */
+  .ghosts { position: absolute; inset: 0; pointer-events: none; }
+  .ghosts span {
+    position: absolute; font-family: var(--display); font-weight: 700;
+    color: var(--neon); opacity: .07;
+  }
+
+  .kicker {
+    font-family: var(--body); font-weight: 600; font-size: 20px;
+    letter-spacing: 4.5px; color: var(--neon); text-transform: uppercase;
+    margin-bottom: 26px; position: relative;
+  }
+
+  /* The jumbled-to-solved letter tiles */
+  .tiles { display: flex; gap: 11px; margin-bottom: 34px; position: relative; }
+  .tile {
+    width: 74px; height: 88px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--display); font-weight: 700; font-size: 44px;
+    background: #141414; border: 2px solid #2A2A2A; color: #6E756A;
+  }
+  .tile.on {
+    background: var(--neon); border-color: var(--neon); color: #061400;
+    box-shadow: 0 0 26px rgba(57,255,20,.45);
+  }
+  .tile.gap { width: 26px; background: none; border: none; box-shadow: none; }
+
+  h1 {
+    font-family: var(--display); font-weight: 700; font-size: 62px;
+    color: var(--white); line-height: 1.12; letter-spacing: -1px;
+    max-width: 15em; position: relative;
+  }
+  h1 em { font-style: normal; color: var(--neon); }
+
+  .sub {
+    font-size: 25px; color: var(--dim); margin-top: 20px;
+    font-weight: 400; position: relative;
+  }
+
+  .foot {
+    position: absolute; left: 88px; right: 88px; bottom: 96px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .brand {
+    font-family: var(--display); font-weight: 600; font-size: 21px;
+    color: var(--white); letter-spacing: .3px;
+  }
+  .brand span { color: var(--neon); }
+  .url { font-size: 20px; color: var(--dim); font-weight: 500; }
+</style>
+</head>
+<body>
+
+  <p class="hint">
+    <b>How to turn this into og.png:</b> screenshot the black card below at exactly
+    <b>1200 x 630</b> and save it as <code>og.png</code> in the same folder as
+    <code>index.html</code>. The easiest way is Chrome: press <code>F12</code>, then
+    <code>Ctrl+Shift+P</code>, type <code>screenshot</code>, and choose
+    <b>Capture node screenshot</b> with the card selected. Step by step help is in
+    <code>README.md</code>.
+  </p>
+
+  <div class="card" id="card">
+    <div class="rules top"><i></i><i></i></div>
+
+    <div class="ghosts">
+      <span style="left:6%;  top:14%; font-size:74px; transform:rotate(-14deg)">J</span>
+      <span style="left:88%; top:22%; font-size:96px; transform:rotate(11deg)">M</span>
+      <span style="left:79%; top:66%; font-size:68px; transform:rotate(-8deg)">B</span>
+      <span style="left:14%; top:74%; font-size:88px; transform:rotate(9deg)">A</span>
+      <span style="left:50%; top:8%;  font-size:60px; transform:rotate(17deg)">L</span>
+      <span style="left:66%; top:86%; font-size:56px; transform:rotate(-16deg)">N</span>
+    </div>
+
+    <div class="kicker">Free word puzzle</div>
+
+    <div class="tiles">
+      <div class="tile on">U</div>
+      <div class="tile on">N</div>
+      <div class="tile on">J</div>
+      <div class="tile">M</div>
+      <div class="tile">B</div>
+      <div class="tile">U</div>
+      <div class="tile">L</div>
+      <div class="tile">E</div>
+      <div class="tile gap"></div>
+      <div class="tile">I</div>
+      <div class="tile">A</div>
+    </div>
+
+    <h1>Everyone throws AI words around.<br /><em>Now you will actually know them.</em></h1>
+    <p class="sub">100 AI terms. Unscramble it, then find out what it really means.</p>
+
+    <div class="foot">
+      <div class="brand">EDDY'S <span>AI LAB</span></div>
+      <div class="url">eddysailab.github.io/unjumble-ai</div>
+    </div>
+
+    <div class="rules bottom"><i></i><i></i></div>
+  </div>
+
+</body>
+</html>

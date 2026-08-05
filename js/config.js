@@ -9,19 +9,25 @@ window.UNJUMBLE = window.UNJUMBLE || {};
 
 UNJUMBLE.config = {
 
-  /* --------------------------------------------------------------------------
-     EMAIL CAPTURE ENDPOINT
-     --------------------------------------------------------------------------
-     Leave this as "" (empty) and emails are only saved in the player's browser.
-     To collect emails for real, paste a form endpoint URL between the quotes.
+  /* ==========================================================================
+     !! READ THIS FIRST !!  EMAIL CAPTURE ENDPOINT
+     ==========================================================================
+     WHILE THIS IS EMPTY ("") NO EMAIL ADDRESS IS EVER COLLECTED. NOTHING IS
+     SENT ANYWHERE, NOTHING IS STORED FOR YOU, AND EVERY SIGNUP IS LOST.
 
-     Where to get one (all free tiers work):
+     The game will tell players that signup is not live yet, rather than
+     thanking them for joining a list that does not exist. It also prints a
+     warning in the browser console every time someone tries.
+
+     To start collecting leads for real, paste a form endpoint between the
+     quotes below. All of these have a free tier:
        - Formspree:  make a form, copy the URL that looks like
                      https://formspree.io/f/abcdwxyz
        - ConvertKit / Mailchimp: use their "custom form action" / API URL.
 
-     When set, Unjumble AI sends { email, solved, score } to this URL on signup.
-  -------------------------------------------------------------------------- */
+     When set, Unjumble AI sends { email, solved, score, pack, source } to
+     that URL, and only then thanks the player.
+  ========================================================================== */
   FORM_ENDPOINT: "",
 
   /* --------------------------------------------------------------------------
@@ -29,6 +35,45 @@ UNJUMBLE.config = {
   -------------------------------------------------------------------------- */
   SITE_URL: "https://www.eddysailab.com",
   SITE_URL_LABEL: "www.eddysailab.com",
+
+  /* --------------------------------------------------------------------------
+     WHERE THIS GAME LIVES
+     --------------------------------------------------------------------------
+     Used for share links. This MUST match the og:url and canonical tags in
+     index.html. If you move the game to a custom domain you have to change
+     it in BOTH places, because social networks read the tags in index.html
+     without ever running this file. The game warns in the browser console if
+     the two ever drift apart.
+  -------------------------------------------------------------------------- */
+  SITE_ORIGIN: "https://eddysailab.github.io/unjumble-ai/",
+
+  /* --------------------------------------------------------------------------
+     ANALYTICS (optional, privacy friendly, no cookies, no consent banner)
+     --------------------------------------------------------------------------
+     Leave provider as "" and NOTHING is loaded and nothing is tracked. The
+     game works exactly the same, you just cannot see how many people played.
+
+     To switch it on, pick one:
+
+       Plausible (plausible.io)
+         provider: "plausible"
+         domain:   "eddysailab.github.io"        <- the domain you registered
+         src:      "https://plausible.io/js/script.js"
+
+       Umami (umami.is)
+         provider:  "umami"
+         websiteId: "the id from your Umami dashboard"
+         src:       "https://cloud.umami.is/script.js"
+
+     Events sent: game_started, pack_started, word_solved, pack_completed,
+     cta_clicked, email_submitted, result_shared.
+  -------------------------------------------------------------------------- */
+  ANALYTICS: {
+    provider: "",     // "plausible", "umami", or "" for off
+    domain: "",       // Plausible only
+    websiteId: "",    // Umami only
+    src: ""           // the script URL from your provider
+  },
 
   /* --------------------------------------------------------------------------
      BRAND (change these to rebrand the whole game later)

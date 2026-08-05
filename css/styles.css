@@ -682,8 +682,16 @@ a { color: var(--cyan-deep); font-weight: 800; }
   padding: 13px 15px; font-family: var(--font); font-weight: 700; font-size: 15px;
 }
 .email-input:focus { outline: none; border-color: var(--green); }
-.email-note { color: var(--green-deep); font-size: 13.5px; font-weight: 800; margin: 10px 0 0; min-height: 18px; }
-:root[data-theme="dark"] .email-note { color: var(--green); }
+.email-privacy {
+  color: var(--muted); font-size: 12px; font-weight: 700;
+  margin: 9px 0 0; line-height: 1.5; max-width: 30em;
+  margin-left: auto; margin-right: auto;
+}
+.email-note { color: var(--muted); font-size: 13.5px; font-weight: 800; margin: 8px 0 0; min-height: 18px; }
+.email-note.good { color: var(--green-deep); }
+.email-note.warn { color: var(--amber-deep); }
+:root[data-theme="dark"] .email-note.good { color: var(--green); }
+:root[data-theme="dark"] .email-note.warn { color: var(--amber); }
 
 /* =============================== Motion ================================== */
 .fade-up { animation: fadeUp .34s ease both; }

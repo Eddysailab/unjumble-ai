@@ -7,10 +7,36 @@
   <meta name="description" content="Unjumble AI is a free word puzzle that teaches you the words everyone uses about AI. Unscramble the term, then learn what it actually means. By Eddy's AI Lab." />
   <meta name="theme-color" content="#EEF5E4" />
 
-  <!-- Open Graph / social -->
+  <!-- ==========================================================================
+       WHERE THIS GAME LIVES
+       Social networks read these tags WITHOUT running any JavaScript, so the
+       address has to be written out in full here. It must match SITE_ORIGIN in
+       js/config.js. If you move the game to a custom domain, change it in both
+       places (there are four mentions below). The game prints a console warning
+       if the two ever disagree.
+       ========================================================================== -->
+  <link rel="canonical" href="https://eddysailab.github.io/unjumble-ai/" />
+
+  <!-- Open Graph: how the link looks when shared on WhatsApp, LinkedIn, Facebook -->
+  <meta property="og:site_name" content="Eddy's AI Lab" />
   <meta property="og:title" content="Unjumble AI — can you unscramble the language of AI?" />
-  <meta property="og:description" content="A free word puzzle that teaches you what AI people are actually talking about. By Eddy's AI Lab." />
+  <meta property="og:description" content="A free word puzzle that teaches you what AI people are actually talking about. 100 terms, plain English. By Eddy's AI Lab." />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://eddysailab.github.io/unjumble-ai/" />
+  <meta property="og:image" content="https://eddysailab.github.io/unjumble-ai/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Unjumble AI, a free word puzzle teaching the language of AI." />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Unjumble AI — can you unscramble the language of AI?" />
+  <meta name="twitter:description" content="A free word puzzle that teaches you what AI people are actually talking about. 100 terms, plain English. By Eddy's AI Lab." />
+  <meta name="twitter:image" content="https://eddysailab.github.io/unjumble-ai/og.png" />
+
+  <!-- Favicon, drawn inline so there is no extra file to lose and it still
+       works offline: a tilted neon green letter tile on black. -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%230A0A0A'/%3E%3Cg transform='rotate(-13 32 32)'%3E%3Crect x='13' y='13' width='38' height='38' rx='8' fill='%2339FF14'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-family='Helvetica,Arial,sans-serif' font-size='27' font-weight='bold' fill='%230A0A0A'%3EU%3C/text%3E%3C/g%3E%3C/svg%3E" />
 
   <!-- Fonts are optional. A strong system fallback is set in CSS, so the game
        still works fully offline if these do not load. -->
@@ -55,6 +81,33 @@
   <script src="js/fx.js"></script>
   <script src="js/engine.js"></script>
   <script src="js/app.js"></script>
+
+  <!-- Analytics loader. Reads the ANALYTICS block in js/config.js. While that
+       block's provider is "" this adds nothing to the page and loads nothing,
+       so the game stays dependency free and works offline. To remove analytics
+       entirely, clear the block in config.js or delete this script. -->
+  <script>
+    (function () {
+      var a = (window.UNJUMBLE && UNJUMBLE.config && UNJUMBLE.config.ANALYTICS) || {};
+      if (!a.provider || !a.src) return;
+      var s = document.createElement("script");
+      s.defer = true;
+      s.src = a.src;
+      if (a.provider === "plausible" && a.domain) {
+        s.setAttribute("data-domain", a.domain);
+      } else if (a.provider === "umami" && a.websiteId) {
+        s.setAttribute("data-website-id", a.websiteId);
+      }
+      // If the network is down this simply never loads. Nothing else breaks.
+      s.onerror = function () {};
+      document.head.appendChild(s);
+      // Plausible's queue shim, so events fired before the script lands survive.
+      window.plausible = window.plausible || function () {
+        (window.plausible.q = window.plausible.q || []).push(arguments);
+      };
+    })();
+  </script>
+
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       UNJUMBLE.app.init();

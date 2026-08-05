@@ -17,6 +17,37 @@ window.UNJUMBLE = window.UNJUMBLE || {};
   var sinceNudge = 0;        // words solved since the last encouragement screen
   var lastNudge = -1;        // so he does not repeat the same line twice running
 
+  /* ------------------------------ analytics -----------------------------
+     One funnel event helper. When ANALYTICS.provider in config.js is empty
+     this does nothing at all, so the game is identical with tracking off.
+     It never throws, because losing a stat must never break a game.
+  --------------------------------------------------------------------- */
+  function track(name, props) {
+    var a = (UNJUMBLE.config && UNJUMBLE.config.ANALYTICS) || {};
+    if (!a.provider) return;
+    try {
+      if (window.plausible) {
+        window.plausible(name, props ? { props: props } : undefined);
+      } else if (window.umami && typeof window.umami.track === "function") {
+        window.umami.track(name, props || {});
+      }
+    } catch (e) { /* analytics is never worth an error */ }
+  }
+  UNJUMBLE.track = track;   // so engine.js can report a solved word
+
+  /* Warn if the share URL in config has drifted from the tags social
+     networks actually read out of index.html. */
+  function checkOrigin() {
+    try {
+      var canonical = document.querySelector('link[rel="canonical"]');
+      var cfgOrigin = UNJUMBLE.config.SITE_ORIGIN;
+      if (canonical && cfgOrigin && canonical.href !== cfgOrigin && window.console && console.warn) {
+        console.warn("[Unjumble AI] SITE_ORIGIN in js/config.js (" + cfgOrigin + ") does not match " +
+          "the canonical link in index.html (" + canonical.href + "). Update both when the game moves.");
+      }
+    } catch (e) { /* nothing worth breaking for */ }
+  }
+
   /* ------------------------------- setup ------------------------------- */
   function init() {
     screen = document.getElementById("screen");
@@ -36,6 +67,7 @@ window.UNJUMBLE = window.UNJUMBLE || {};
 
     renderBrand();
     UNJUMBLE.initBackground();
+    checkOrigin();
     showWelcome();
   }
 
@@ -121,7 +153,10 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     var go = el("button", "btn primary big",
       (started ? C.welcomeContinue : C.welcomeStart) +
       '<span class="btn-ic">' + icon("nav-arrow-right") + '</span>', { type: "button" });
-    go.addEventListener("click", showPacks);
+    go.addEventListener("click", function () {
+      track("game_started", { returning: started });
+      showPacks();
+    });
     wrap.appendChild(go);
 
     var how = el("div", "how-card");
@@ -208,6 +243,7 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     }
     session = { category: categoryId, list: list, index: start };
     sinceNudge = 0;
+    track("pack_started", { pack: categoryId });
     showPuzzle();
   }
 
@@ -233,6 +269,7 @@ window.UNJUMBLE = window.UNJUMBLE || {};
       category: session.category,
       solved: function (t, points) {
         UNJUMBLE.state.markSolved(t, points);
+        track("word_solved", { pack: session.category, term: t.term, points: points });
         renderHud(true);
       },
       onMiss: function () { renderHud(true); },
@@ -337,6 +374,7 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     var idx = UNJUMBLE.categories.indexOf(cat);
     var nextCat = UNJUMBLE.categories[idx + 1];
 
+    track("pack_completed", { pack: session.category });
     UNJUMBLE.audio.play("complete");
     UNJUMBLE.confetti(110);
 
@@ -405,10 +443,11 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     var ctaBtn = el("a", "btn primary big",
       cfg.CTA.buttonLabel + '<span class="btn-ic">' + icon("nav-arrow-right") + '</span>',
       { href: cfg.CTA.href, target: "_blank", rel: "noopener" });
+    ctaBtn.addEventListener("click", function () { track("cta_clicked", { from: "finish" }); });
     cta.appendChild(ctaBtn);
     wrap.appendChild(cta);
 
-    wrap.appendChild(buildEmailForm());
+    wrap.appendChild(buildEmailForm("finish"));
 
     var again = el("button", "link-btn",
       '<span class="ui-ic">' + icon("refresh-double") + '</span>' + C.playAgain, { type: "button" });
@@ -429,7 +468,9 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     return t;
   }
 
-  function buildEmailForm() {
+  /* Email capture. The one rule here: never tell a player they are on a list
+     unless their address actually reached somewhere it can be read. */
+  function buildEmailForm(source) {
     var C = UNJUMBLE.copy;
     var cfg = UNJUMBLE.config;
     var box = el("div", "email-card");
@@ -443,33 +484,65 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     form.appendChild(input);
     form.appendChild(send);
 
+    var privacy = el("p", "email-privacy", null, { text: C.emailPrivacy });
     var note = el("p", "email-note", "", { "aria-live": "polite" });
+
+    function say(text, kind) {
+      note.className = "email-note" + (kind ? " " + kind : "");
+      note.textContent = text;
+    }
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       var value = input.value.trim();
       if (!value) return;
-      UNJUMBLE.state.setEmail(value);
+
+      // Nowhere to send it. Say so plainly rather than faking a signup.
+      if (!cfg.FORM_ENDPOINT) {
+        if (window.console && console.warn) {
+          console.warn("[Unjumble AI] A player submitted \"" + value + "\" but FORM_ENDPOINT " +
+            "is empty in js/config.js, so it was NOT collected and is now lost. " +
+            "Paste your form endpoint there to start capturing leads.");
+        }
+        say(C.emailNoEndpoint, "warn");
+        return;
+      }
+
       send.disabled = true;
       input.disabled = true;
-      note.textContent = C.emailThanks;
+      say(C.emailSending);
 
-      if (cfg.FORM_ENDPOINT) {
-        try {
-          window.fetch(cfg.FORM_ENDPOINT, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "Accept": "application/json" },
-            body: JSON.stringify({
-              email: value,
-              solved: UNJUMBLE.state.totalSolved(),
-              score: UNJUMBLE.state.get().score
-            })
-          })["catch"](function () { /* saved locally either way */ });
-        } catch (err) { /* saved locally either way */ }
+      function failed() {
+        send.disabled = false;
+        input.disabled = false;
+        say(C.emailRetry, "warn");
       }
+
+      if (!window.fetch) { failed(); return; }
+
+      try {
+        window.fetch(cfg.FORM_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({
+            email: value,
+            solved: UNJUMBLE.state.totalSolved(),
+            score: UNJUMBLE.state.get().score,
+            pack: source || "",
+            source: "unjumble-ai"
+          })
+        }).then(function (res) {
+          if (!res || !res.ok) { failed(); return; }
+          // Only now is it true.
+          UNJUMBLE.state.setEmail(value);
+          say(C.emailThanks, "good");
+          track("email_submitted", { pack: source || "finish" });
+        })["catch"](failed);
+      } catch (err) { failed(); }
     });
 
     box.appendChild(form);
+    box.appendChild(privacy);
     box.appendChild(note);
     return box;
   }
