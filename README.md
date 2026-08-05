@@ -45,18 +45,31 @@ nothing is loaded from the internet.
    and set it to `1` to go back to requiring every word.
 2. A short clue appears, along with the word's letters, scrambled.
 3. They tap the letters in order to spell the word.
-4. Stuck? Two hints, both unlimited and both cheap:
+4. Stuck? Three ways out, none of them punishing:
    - **Reveal a letter** fills in the next correct letter.
    - **What does it mean?** shows the plain English meaning before they
      solve, which is usually the one that makes the word click.
+   - **Skip for now** sends the word to the back of the pack and brings it
+     round again later. It costs nothing and breaks no streak. It disappears
+     on the last word left, since there would be nothing to skip to.
 5. Wrong order? The letters shake and drop back. Nothing else happens, and
    they can try again straight away.
 6. Solved? They get the word's **meaning** and a **real life example**, plus
    points and a streak.
 
+**On a computer you can just type.** Letter keys place letters, Backspace
+undoes the last one, Escape clears the board, and Enter moves on. Tapping
+works exactly as before, this is only an addition.
+
 Points are 100 per word, minus 2 percent for each letter revealed and 10
 percent for the meaning, never below 20, plus a small streak bonus. You can
 change all of those numbers in `js/config.js`.
+
+**One exception.** If somebody reveals *every* letter, the word was handed to
+them rather than solved. It still counts, still shows the meaning, and still
+completes the pack, but it scores the minimum and ends the streak. Otherwise
+tapping "reveal" twenty times would beat actually playing. The game says so
+kindly on the card, and there is still no way to lose.
 
 **Words get harder as you go.** Inside every pack the game orders words by
 length, shortest first, so a pack opens with four and five letter words and

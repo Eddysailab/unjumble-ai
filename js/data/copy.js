@@ -15,7 +15,8 @@ UNJUMBLE.copy = {
   welcomeHowTitle: "How it works",
   welcomeHow: [
     "Read the clue, then tap the letters in the right order.",
-    "Stuck? Reveal a letter. It is free, and you can do it as often as you like.",
+    "On a computer you can just type. Backspace undoes, Escape clears.",
+    "Stuck? Reveal a letter, or ask what the word means. Both cost a little.",
     "Get it wrong and nothing bad happens. The letters just go back.",
     "Solve it and you get the meaning, plus a real example of it in use."
   ],
@@ -33,6 +34,9 @@ UNJUMBLE.copy = {
   clearBtn: "Clear",
   defineBtn: "What does it mean?",
   defineLabel: "The meaning",
+  skipBtn: "Skip for now",
+  // Shown when a player revealed every letter of a word.
+  gaveUpNote: "Every letter was revealed on that one, so it scores the minimum and the streak resets. You still learned the word, which is the point.",
   // {n} and {d} are filled in from POINTS in config.js
   revealCostNote: "A letter costs {n} percent, the meaning costs {d}. Use as many as you need.",
   solvedHead: "You got it",
@@ -41,6 +45,8 @@ UNJUMBLE.copy = {
   nextBtn: "Next word",
   lastBtn: "Finish this pack",
   wrongNudge: "Not that one. Try a different order.",
+  // {letter} is the key they pressed that is not in this word.
+  noSuchLetter: "No {letter} left in this word.",
   allRevealedNote: "Revealed for you. Read it, then move on.",
 
   /* --------------------------------------------------------------------------

@@ -56,14 +56,21 @@ window.UNJUMBLE = window.UNJUMBLE || {};
       return !!load().solved[UNJUMBLE.state.termId(term)];
     },
 
-    markSolved: function (term, points) {
+    /* opts.gaveUp means every letter was revealed, so the word was handed
+       over rather than worked out. It still counts as solved and still
+       scores the minimum, but it ends the streak rather than extending it. */
+    markSolved: function (term, points, opts) {
       var s = load();
       var id = UNJUMBLE.state.termId(term);
       if (!s.solved[id]) {
         s.solved[id] = true;
         s.score += points;
-        s.streak += 1;
-        if (s.streak > s.bestStreak) s.bestStreak = s.streak;
+        if (opts && opts.gaveUp) {
+          s.streak = 0;
+        } else {
+          s.streak += 1;
+          if (s.streak > s.bestStreak) s.bestStreak = s.streak;
+        }
         save();
       }
       return s;

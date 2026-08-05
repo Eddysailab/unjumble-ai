@@ -277,9 +277,21 @@ window.UNJUMBLE = window.UNJUMBLE || {};
       index: session.index,
       total: session.list.length,
       category: session.category,
-      solved: function (t, points) {
-        UNJUMBLE.state.markSolved(t, points);
-        track("word_solved", { pack: session.category, term: t.term, points: points });
+      // Nothing to skip to if this is the last word left in the queue.
+      canSkip: session.index < session.list.length - 1,
+      skip: function () {
+        // Move it to the back of the queue. The next word slides into place,
+        // so the index stays where it is. No points, no streak change.
+        var moved = session.list.splice(session.index, 1)[0];
+        session.list.push(moved);
+        showPuzzle();
+      },
+      solved: function (t, points, anchorEl, opts) {
+        UNJUMBLE.state.markSolved(t, points, opts);
+        track("word_solved", {
+          pack: session.category, term: t.term, points: points,
+          gaveUp: !!(opts && opts.gaveUp)
+        });
         renderHud(true);
       },
       onMiss: function () { renderHud(true); },

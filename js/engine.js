@@ -92,6 +92,21 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     actions.appendChild(revealBtn);
     actions.appendChild(defineBtn);
     actions.appendChild(clearBtn);
+
+    /* Skip sends the word to the back of this pack's queue. It is not solved
+       and it is not lost, it just comes round again later. Only offered when
+       there is something else to move on to, otherwise it would hand back the
+       same word and look broken. */
+    if (ctx.canSkip) {
+      var skipBtn = el("button", "link-btn skip-btn",
+        C.skipBtn + '<span class="ui-ic">' + icon("nav-arrow-right") + '</span>', { type: "button" });
+      skipBtn.addEventListener("click", function () {
+        if (solved || busy) return;
+        UNJUMBLE.audio.play("click");
+        ctx.skip();
+      });
+      actions.appendChild(skipBtn);
+    }
     card.appendChild(actions);
 
     // Say up front what each hint costs, so the choice is never a surprise.
@@ -106,6 +121,58 @@ window.UNJUMBLE = window.UNJUMBLE || {};
 
     container.appendChild(card);
     render();
+
+    /* ---------------------------- keyboard -----------------------------
+       Tapping still works exactly as before. This is purely an addition for
+       anyone on a laptop, where tabbing through eighteen tiles is miserable.
+
+       The listener lives on the document and removes itself as soon as its
+       own card leaves the page, so puzzles never stack up listeners.
+    --------------------------------------------------------------------- */
+    function onKey(e) {
+      if (!card.isConnected) { document.removeEventListener("keydown", onKey); return; }
+
+      // Never steal a keystroke meant for a text field, and leave browser and
+      // operating system shortcuts alone.
+      var t = e.target || {};
+      var tag = (t.tagName || "").toUpperCase();
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || t.isContentEditable) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+      if (solved) {
+        // The Next button already has focus, so let the browser click it
+        // rather than advancing twice.
+        if (e.key === "Enter" && tag !== "BUTTON") {
+          e.preventDefault();
+          ctx.next();
+        }
+        return;
+      }
+      if (busy) return;
+
+      if (e.key === "Backspace") { e.preventDefault(); takeBackLast(); return; }
+      if (e.key === "Escape") { e.preventDefault(); clearBoard(); return; }
+
+      if (e.key && e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
+        e.preventDefault();
+        var want = e.key.toUpperCase();
+        var free = tiles.filter(function (x) { return x.ch === want && x.placedAt === null; })[0];
+        if (free) place(free);
+        else setNudge(C.noSuchLetter.replace("{letter}", want));
+      }
+    }
+
+    // Undo the most recently placed tile, leaving revealed letters alone.
+    function takeBackLast() {
+      var newest = null;
+      tiles.forEach(function (x) {
+        if (x.placedAt === null || x.locked) return;
+        if (!newest || x.placedAt > newest.placedAt) newest = x;
+      });
+      if (newest) takeBack(newest.placedAt);
+    }
+
+    document.addEventListener("keydown", onKey);
 
     /* ----------------------------- rendering ---------------------------- */
     function render() {
@@ -293,10 +360,24 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     function win() {
       solved = true;
       var P = cfg.POINTS;
-      var spent = revealsUsed * P.perRevealCost + (definitionUsed ? P.definitionCost : 0);
-      var base = Math.max(P.minimum, P.solve - spent);
-      var streakBonus = Math.min(UNJUMBLE.state.get().streak, 5) * P.streakBonus;
-      var points = base + streakBonus;
+
+      /* If every single letter was revealed, the word was handed over rather
+         than solved. That still counts as learning it, so it still completes
+         and still shows the meaning, but it earns the minimum, earns no
+         streak bonus, and ends the streak. Otherwise revealing everything
+         would out-score honest effort. */
+      var gaveUp = revealsUsed >= letterIdx.length;
+      var streakBonus = 0;
+      var points;
+
+      if (gaveUp) {
+        points = P.minimum;
+      } else {
+        var spent = revealsUsed * P.perRevealCost + (definitionUsed ? P.definitionCost : 0);
+        var base = Math.max(P.minimum, P.solve - spent);
+        streakBonus = Math.min(UNJUMBLE.state.get().streak, 5) * P.streakBonus;
+        points = base + streakBonus;
+      }
 
       setNudge("");
       render();
@@ -305,19 +386,18 @@ window.UNJUMBLE = window.UNJUMBLE || {};
       clearBtn.disabled = true;
 
       UNJUMBLE.audio.play("win");
-      UNJUMBLE.confetti(revealsUsed >= letterIdx.length ? 30 : 70);
+      UNJUMBLE.confetti(gaveUp ? 30 : 70);
       UNJUMBLE.floatPoints("+" + points, track);
-      ctx.solved(term, points, track);
+      ctx.solved(term, points, track, { gaveUp: gaveUp });
 
-      showReveal(points, streakBonus);
+      showReveal(points, streakBonus, gaveUp);
     }
 
     /* --------------------- the payoff, after solving --------------------- */
-    function showReveal(points, streakBonus) {
+    function showReveal(points, streakBonus, gaveUp) {
       clear(revealCard);
       revealCard.className = "reveal-card show";
 
-      var gaveUp = revealsUsed >= letterIdx.length;
       revealCard.appendChild(el("div", "rv-head",
         '<span class="ui-ic">' + icon(gaveUp ? "book" : "check-circle") + '</span>' +
         (gaveUp ? UNJUMBLE.copy.allRevealedNote : UNJUMBLE.copy.solvedHead)));
@@ -341,6 +421,11 @@ window.UNJUMBLE = window.UNJUMBLE || {};
           '<span class="ui-ic">' + icon("fire-flame") + '</span>' + streakBonus + " streak bonus"));
       }
       revealCard.appendChild(pts);
+
+      // Warmly, not tellingly off. There is still no way to lose here.
+      if (gaveUp) {
+        revealCard.appendChild(el("p", "rv-gaveup", null, { text: UNJUMBLE.copy.gaveUpNote }));
+      }
 
       var meaning = el("div", "rv-block");
       meaning.appendChild(el("span", "rv-label", UNJUMBLE.copy.meansLabel));

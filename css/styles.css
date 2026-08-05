@@ -552,6 +552,15 @@ a { color: var(--cyan-deep); font-weight: 800; }
   text-align: center; color: var(--muted);
   font-size: 12.5px; font-weight: 700; margin: 12px 0 0;
 }
+.skip-btn { font-size: 14px; }
+.skip-btn .ic { width: 15px; height: 15px; }
+
+/* Said when a word was fully revealed rather than worked out. */
+.rv-gaveup {
+  color: var(--muted); font-size: 13.5px; font-weight: 700;
+  line-height: 1.55; margin: 0 0 14px; max-width: 30em;
+  margin-left: auto; margin-right: auto;
+}
 
 /* ---------------------- The payoff, after solving ------------------------ */
 .reveal-card { display: none; }
