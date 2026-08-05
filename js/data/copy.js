@@ -13,10 +13,13 @@ UNJUMBLE.copy = {
   welcomeStart: "Start unjumbling",
   welcomeContinue: "Keep going",
   welcomeHowTitle: "How it works",
+  // {n} and {d} are filled in from POINTS in config.js, so these lines can
+  // never drift out of date with what a hint actually costs.
   welcomeHow: [
     "Read the clue, then tap the letters in the right order.",
     "On a computer you can just type. Backspace undoes, Escape clears.",
-    "Stuck? Reveal a letter, or ask what the word means. Both cost a little.",
+    "Stuck? A letter costs {n} percent, the whole meaning costs {d}.",
+    "Or skip a word entirely. It costs nothing and comes round again later.",
     "Get it wrong and nothing bad happens. The letters just go back.",
     "Solve it and you get the meaning, plus a real example of it in use."
   ],
@@ -50,11 +53,11 @@ UNJUMBLE.copy = {
   allRevealedNote: "Revealed for you. Read it, then move on.",
 
   /* --------------------------------------------------------------------------
-     THE MASCOT'S NUDGES
+     ENCOURAGEMENT BETWEEN WORDS
      --------------------------------------------------------------------------
-     He turns up between words now and then to keep the player going. One of
-     these headlines is picked at random each time, so add as many as you like.
-     Keep them short, warm, and never smug.
+     A short screen that turns up between words now and then to keep the player
+     going. One of these headlines is picked at random each time, so add as
+     many as you like. Keep them short, warm, and never smug.
   -------------------------------------------------------------------------- */
   nudgeBtn: "Keep going",
   nudges: [
@@ -84,7 +87,9 @@ UNJUMBLE.copy = {
 
   // Finish screen
   finishTitle: "You unjumbled every last one.",
-  finishLead: "One hundred AI words, decoded. You can now read the headlines, sit in the meetings, and know exactly what people mean.",
+  // {total} is filled in from the real number of words in terms.js, so adding
+  // or removing words can never make this line wrong.
+  finishLead: "All {total} AI words, decoded. You can now read the headlines, sit in the meetings, and know exactly what people mean.",
   emailLabel: "Want more where this came from?",
   emailPlaceholder: "your@email.com",
   emailBtn: "Send it over",

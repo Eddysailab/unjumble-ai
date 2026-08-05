@@ -1,7 +1,7 @@
 # Unjumble AI
 
 A free word puzzle that teaches you the language of AI, by Eddy's AI Lab.
-One hundred AI terms, split into five themed packs. You unscramble the word
+Ninety eight AI terms, split into five themed packs. You unscramble the word
 from a short clue, then you get the plain English meaning and a real life
 example. It is built for complete beginners: no lives, no timer, and no way
 to lose.
@@ -38,7 +38,7 @@ nothing is loaded from the internet.
 ## How the game works
 
 1. The player picks a pack. Packs unlock in order, but **not** by finishing
-   one completely: solving **70 percent** of a pack (14 of its 20 words) opens
+   one completely: solving **70 percent** of a pack opens
    the next one. That way a single word somebody cannot face never blocks the
    rest of the game. The locked pack tells them exactly how many are needed.
    Change `UNLOCK_THRESHOLD` in `js/config.js` to make it stricter or looser,
@@ -98,7 +98,7 @@ unjumble-ai/
     app.js              Screen flow and glue.
     data/
       categories.js     The five packs (name, icon, color, description).
-      terms.js          <-- ALL 100 WORDS, CLUES, MEANINGS AND EXAMPLES.
+      terms.js          <-- EVERY WORD, CLUE, MEANING AND EXAMPLE.
       copy.js           Small bits of on screen text.
 ```
 

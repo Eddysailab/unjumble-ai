@@ -1,8 +1,9 @@
 /* ============================================================================
    UNJUMBLE AI - CATEGORIES
    ----------------------------------------------------------------------------
-   The four themed packs, played in this order. A pack unlocks when every term
-   in the pack before it has been solved. The first one is always unlocked.
+   The five themed packs, played in this order. A pack unlocks once enough of
+   the pack before it has been solved, set by UNLOCK_THRESHOLD in config.js.
+   The first one is always unlocked.
 
    To add a pack: add a block here, then add terms with a matching "category"
    value in terms.js. The order in this file is the order players see.

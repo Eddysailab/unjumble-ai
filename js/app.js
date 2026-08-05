@@ -163,8 +163,12 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     how.appendChild(el("div", "how-title",
       '<span class="howto-ic">' + icon("light-bulb") + '</span>' + C.welcomeHowTitle));
     var ul = el("ul", "how-list");
+    var P = UNJUMBLE.config.POINTS;
     C.welcomeHow.forEach(function (line) {
-      ul.appendChild(el("li", null, null, { text: line }));
+      // Costs come from config, so this list can never claim a hint is free.
+      ul.appendChild(el("li", null, null, {
+        text: line.replace("{n}", P.perRevealCost).replace("{d}", P.definitionCost)
+      }));
     });
     how.appendChild(ul);
     wrap.appendChild(how);
@@ -455,7 +459,9 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     wrap.appendChild(el("div", "hero-badge",
       '<span class="ui-ic">' + icon("trophy") + '</span>Every word solved'));
     wrap.appendChild(el("h1", "hero-title", null, { text: C.finishTitle }));
-    wrap.appendChild(el("p", "hero-lead", null, { text: C.finishLead }));
+    wrap.appendChild(el("p", "hero-lead", null, {
+      text: C.finishLead.replace("{total}", UNJUMBLE.terms.length)
+    }));
 
     var stats = el("div", "finish-stats");
     stats.appendChild(statTile("star", s.score, "points"));
