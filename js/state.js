@@ -105,15 +105,36 @@ window.UNJUMBLE = window.UNJUMBLE || {};
       return list.length > 0 && UNJUMBLE.state.solvedCountIn(categoryId) === list.length;
     },
 
-    // The first pack is always open. Every other pack needs the one before it.
+    /* How many words of a pack must be solved before the NEXT pack opens.
+       Rounded up, and never more than the pack actually holds. */
+    unlockTargetFor: function (categoryId) {
+      var total = UNJUMBLE.state.termsIn(categoryId).length;
+      var frac = UNJUMBLE.config.UNLOCK_THRESHOLD;
+      if (typeof frac !== "number" || frac <= 0) frac = 1;
+      return Math.min(total, Math.ceil(total * frac));
+    },
+
+    /* The first pack is always open. Every other pack opens once enough of the
+       pack before it is solved, so a single word nobody can face never blocks
+       the rest of the game. */
     isCategoryUnlocked: function (categoryId) {
       var cats = UNJUMBLE.categories;
       for (var i = 0; i < cats.length; i++) {
         if (cats[i].id !== categoryId) continue;
         if (i === 0) return true;
-        return UNJUMBLE.state.isCategoryComplete(cats[i - 1].id);
+        var prev = cats[i - 1].id;
+        return UNJUMBLE.state.solvedCountIn(prev) >= UNJUMBLE.state.unlockTargetFor(prev);
       }
       return false;
+    },
+
+    // The pack immediately before this one, or null for the first pack.
+    previousCategory: function (categoryId) {
+      var cats = UNJUMBLE.categories;
+      for (var i = 0; i < cats.length; i++) {
+        if (cats[i].id === categoryId) return i === 0 ? null : cats[i - 1];
+      }
+      return null;
     },
 
     // The next unsolved term in a pack, or null when the pack is done.

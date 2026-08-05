@@ -23,7 +23,9 @@ UNJUMBLE.copy = {
   // Category picker
   packsTitle: "Pick a pack",
   packsLead: "Work through them in order. Each one unlocks the next.",
-  lockedNote: "Finish the pack above to open this one.",
+  // {n} is how many words are needed, {total} is how many the pack above holds.
+  // Both are worked out from UNLOCK_THRESHOLD in config.js, never hardcoded.
+  lockedNote: "Solve {n} of {total} in the pack above to open this one.",
 
   // Puzzle screen
   clueLabel: "The clue",
@@ -61,6 +63,12 @@ UNJUMBLE.copy = {
     "You are further along than you think.",
     "Somebody has been paying attention."
   ],
+
+  // Sharing
+  shareBtn: "Share your score",
+  shareCopied: "Copied. Paste it anywhere.",
+  shareSelectHint: "Press copy on your keyboard to grab this.",
+  shareFailed: "Could not copy automatically. Select the text above.",
 
   // Pack complete
   packDoneTitle: "Pack complete",

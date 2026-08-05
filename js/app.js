@@ -174,6 +174,16 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     UNJUMBLE.heroWord(mark, UNJUMBLE.config.BRAND.productName);
   }
 
+  /* Tells a locked pack exactly what it is waiting for, using the real
+     numbers rather than a hardcoded sentence. */
+  function lockedNoteFor(categoryId) {
+    var prev = UNJUMBLE.state.previousCategory(categoryId);
+    if (!prev) return UNJUMBLE.copy.lockedNote;
+    return UNJUMBLE.copy.lockedNote
+      .replace("{n}", UNJUMBLE.state.unlockTargetFor(prev.id))
+      .replace("{total}", UNJUMBLE.state.termsIn(prev.id).length);
+  }
+
   /* ----------------------------- screen: packs ------------------------- */
   function showPacks() {
     session = null;
@@ -205,7 +215,7 @@ window.UNJUMBLE = window.UNJUMBLE || {};
       b.appendChild(top);
 
       b.appendChild(el("span", "pack-title", null, { text: cat.title }));
-      b.appendChild(el("span", "pack-blurb", null, { text: unlocked ? cat.blurb : C.lockedNote }));
+      b.appendChild(el("span", "pack-blurb", null, { text: unlocked ? cat.blurb : lockedNoteFor(cat.id) }));
 
       var bar = el("span", "pack-bar");
       bar.appendChild(el("span", "pack-fill", "", {
@@ -405,6 +415,10 @@ window.UNJUMBLE = window.UNJUMBLE || {};
       wrap.appendChild(go);
     }
 
+    // Share while the win is still fresh, then the pitch.
+    wrap.appendChild(buildShareButton(session.category));
+    appendLeadCapture(wrap, session.category);
+
     var backBtn = el("button", "btn ghost", C.backToPacks, { type: "button" });
     backBtn.addEventListener("click", showPacks);
     wrap.appendChild(backBtn);
@@ -437,17 +451,15 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     stats.appendChild(statTile("fire-flame", s.bestStreak, "best streak"));
     wrap.appendChild(stats);
 
-    // Call to action back to the site.
-    var cta = el("div", "cta-card");
-    cta.appendChild(el("p", "cta-text", null, { text: cfg.CTA.text }));
-    var ctaBtn = el("a", "btn primary big",
-      cfg.CTA.buttonLabel + '<span class="btn-ic">' + icon("nav-arrow-right") + '</span>',
-      { href: cfg.CTA.href, target: "_blank", rel: "noopener" });
-    ctaBtn.addEventListener("click", function () { track("cta_clicked", { from: "finish" }); });
-    cta.appendChild(ctaBtn);
+    // Sharing first: this is the biggest brag the game ever offers.
+    wrap.appendChild(buildShareButton(null));
+
+    // Then the strongest call to action, marked out from the per pack ones.
+    var cta = buildCta(null);
+    cta.classList.add("cta-final");
     wrap.appendChild(cta);
 
-    wrap.appendChild(buildEmailForm("finish"));
+    if (!UNJUMBLE.state.get().email) wrap.appendChild(buildEmailForm("finish"));
 
     var again = el("button", "link-btn",
       '<span class="ui-ic">' + icon("refresh-double") + '</span>' + C.playAgain, { type: "button" });
@@ -458,6 +470,110 @@ window.UNJUMBLE = window.UNJUMBLE || {};
     wrap.appendChild(again);
 
     screen.appendChild(wrap);
+  }
+
+  /* ------------------------------- sharing ------------------------------
+     Reach is the whole point of this game existing, so sharing has to work
+     everywhere. Three levels, best first:
+       1. The real share sheet (phones, and some desktops).
+       2. Copy to clipboard.
+       3. A readonly box with the text selected, for old browsers and for
+          pages not served over https, where the clipboard is blocked.
+  --------------------------------------------------------------------- */
+  function shareText(packId) {
+    var cfg = UNJUMBLE.config;
+    var s = UNJUMBLE.state.get();
+    var S = cfg.SHARE || {};
+    var cat = packId && UNJUMBLE.categories.filter(function (c) { return c.id === packId; })[0];
+    var template = cat ? (S.pack || "") : (S.finish || S.pack || "");
+    return template
+      .replace("{pack}", cat ? cat.title : cfg.BRAND.productName)
+      .replace("{solved}", UNJUMBLE.state.totalSolved())
+      .replace("{total}", UNJUMBLE.terms.length)
+      .replace("{points}", s.score)
+      .replace("{streak}", s.bestStreak)
+      .replace("{url}", cfg.SITE_ORIGIN);
+  }
+
+  function buildShareButton(packId) {
+    var C = UNJUMBLE.copy;
+    var box = el("div", "share-box");
+
+    var btn = el("button", "btn ghost",
+      '<span class="btn-ic">' + icon("share-android") + '</span>' + C.shareBtn, { type: "button" });
+    // Announced to screen readers when the text lands on the clipboard.
+    var note = el("p", "share-note", "", { "aria-live": "polite" });
+
+    function fallbackSelect(text) {
+      var field = box.querySelector(".share-field");
+      if (!field) {
+        field = el("input", "share-field", null, { type: "text", readonly: "readonly", "aria-label": "Your score, ready to copy" });
+        box.insertBefore(field, note);
+      }
+      field.value = text;
+      field.focus();
+      field.select();
+      try {
+        // Deprecated, but it is the only thing that works on old browsers.
+        var ok = document.execCommand && document.execCommand("copy");
+        note.textContent = ok ? C.shareCopied : C.shareSelectHint;
+      } catch (e) {
+        note.textContent = C.shareSelectHint;
+      }
+    }
+
+    btn.addEventListener("click", function () {
+      var text = shareText(packId);
+      UNJUMBLE.audio.play("click");
+      track("result_shared", { pack: packId || "finish" });
+
+      if (navigator.share) {
+        navigator.share({ title: UNJUMBLE.config.SHARE.title, text: text })
+          ["catch"](function () { /* they closed the sheet, nothing to say */ });
+        return;
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () {
+          note.textContent = C.shareCopied;
+        })["catch"](function () { fallbackSelect(text); });
+        return;
+      }
+      fallbackSelect(text);
+    });
+
+    box.appendChild(btn);
+    box.appendChild(note);
+    return box;
+  }
+
+  /* --------------------------- the lead capture -------------------------
+     The CTA, and the email form when we do not already have their address.
+     This is the reason the game exists, so it now appears on every pack
+     complete screen rather than only at the very end.
+  --------------------------------------------------------------------- */
+  function buildCta(packId) {
+    var cfg = UNJUMBLE.config;
+    var byPack = (cfg.CTA_BY_PACK || {})[packId];
+    var copy = byPack || cfg.CTA;
+
+    var cta = el("div", "cta-card");
+    cta.appendChild(el("p", "cta-text", null, { text: copy.text }));
+    var btn = el("a", "btn primary big",
+      copy.buttonLabel + '<span class="btn-ic">' + icon("nav-arrow-right") + '</span>',
+      { href: copy.href || cfg.CTA.href, target: "_blank", rel: "noopener" });
+    btn.addEventListener("click", function () {
+      track("cta_clicked", { from: packId || "finish" });
+    });
+    cta.appendChild(btn);
+    return cta;
+  }
+
+  // Once we have their address, stop asking. Show the CTA on its own.
+  function appendLeadCapture(wrap, packId) {
+    wrap.appendChild(buildCta(packId));
+    if (!UNJUMBLE.state.get().email) {
+      wrap.appendChild(buildEmailForm(packId || "finish"));
+    }
   }
 
   function statTile(iconName, value, label) {

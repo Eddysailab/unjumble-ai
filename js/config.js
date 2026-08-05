@@ -85,13 +85,84 @@ UNJUMBLE.config = {
   },
 
   /* --------------------------------------------------------------------------
-     FINAL CALL TO ACTION (shown on the finish screen)
+     CALL TO ACTION
+     --------------------------------------------------------------------------
+     This is the fallback, and it is also the one used on the final finish
+     screen. CTA_BY_PACK below overrides the wording per pack.
   -------------------------------------------------------------------------- */
   CTA: {
     text: "Now you speak the language. Ready to actually build with AI?",
     buttonLabel: "Start here",
     href: "https://www.eddysailab.com"
   },
+
+  /* --------------------------------------------------------------------------
+     CALL TO ACTION, WORDED PER PACK
+     --------------------------------------------------------------------------
+     Shown on the screen a player sees when they finish each pack. Keyed by the
+     pack id from js/data/categories.js. Any pack with no entry here falls back
+     to the CTA block above, so you can delete any of these safely.
+
+     Each one picks up the thread of what they just learned. Keep them short,
+     and keep the promise honest.
+  -------------------------------------------------------------------------- */
+  CTA_BY_PACK: {
+    basics: {
+      text: "You know the words now. The next step is using the tools without guessing.",
+      buttonLabel: "See the beginner course",
+      href: "https://www.eddysailab.com"
+    },
+    ml: {
+      text: "That is what is under the hood of every AI tool you touch. Want to see it properly?",
+      buttonLabel: "Go deeper",
+      href: "https://www.eddysailab.com"
+    },
+    genai: {
+      text: "These are the tools you can actually build with. We will show you how.",
+      buttonLabel: "Start building",
+      href: "https://www.eddysailab.com"
+    },
+    ethics: {
+      text: "This is exactly what businesses are hiring for right now.",
+      buttonLabel: "See what we teach",
+      href: "https://www.eddysailab.com"
+    },
+    work: {
+      text: "You are ready for the real thing. Come and put it to work.",
+      buttonLabel: "Start here",
+      href: "https://www.eddysailab.com"
+    }
+  },
+
+  /* --------------------------------------------------------------------------
+     SHARING
+     --------------------------------------------------------------------------
+     The text a player sends to friends. Keep it SHORT, it has to survive being
+     pasted into a WhatsApp status or a TikTok comment.
+
+     You can use any of these placeholders, and they are swapped for real
+     numbers when the player taps share:
+       {pack}    the pack they just finished, or "Unjumble AI" at the end
+       {solved}  how many words they have solved
+       {total}   how many words there are in total
+       {points}  their score
+       {streak}  their best streak
+       {url}     the link to the game
+  -------------------------------------------------------------------------- */
+  SHARE: {
+    title: "Unjumble AI",
+    pack: "I just finished {pack} on Unjumble AI. {solved}/{total} AI words, {points} points. Think you can beat that? {url}",
+    finish: "I unjumbled all {total} AI words. {points} points, best streak {streak}. Your turn. {url}"
+  },
+
+  /* --------------------------------------------------------------------------
+     HOW MUCH OF A PACK OPENS THE NEXT ONE
+     --------------------------------------------------------------------------
+     0.7 means a player only has to solve 70 percent of a pack before the next
+     one opens, so one word they cannot face never blocks the whole game.
+     Set it to 1 to require every word. The first pack is always open.
+  -------------------------------------------------------------------------- */
+  UNLOCK_THRESHOLD: 0.7,
 
   /* --------------------------------------------------------------------------
      SCORING (kept gentle on purpose, there are no lives and no way to lose)

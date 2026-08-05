@@ -37,7 +37,12 @@ nothing is loaded from the internet.
 
 ## How the game works
 
-1. The player picks a pack. Packs unlock in order, one at a time.
+1. The player picks a pack. Packs unlock in order, but **not** by finishing
+   one completely: solving **70 percent** of a pack (14 of its 20 words) opens
+   the next one. That way a single word somebody cannot face never blocks the
+   rest of the game. The locked pack tells them exactly how many are needed.
+   Change `UNLOCK_THRESHOLD` in `js/config.js` to make it stricter or looser,
+   and set it to `1` to go back to requiring every word.
 2. A short clue appears, along with the word's letters, scrambled.
 3. They tap the letters in order to spell the word.
 4. Stuck? Two hints, both unlimited and both cheap:
@@ -171,6 +176,31 @@ To actually collect them, you paste one link into `js/config.js`.
 your own address and submit. You should see "You are on the list." If you see
 "Signup is not live yet", the endpoint is still empty. If you see "That did
 not send", the endpoint is wrong or the service is down.
+
+---
+
+## Where the game asks for the sale
+
+There are two moments, and both matter more than the game itself.
+
+**After every pack** (five chances, not one) the player sees a share button,
+a call to action pointing at your site, and a signup box. The wording of the
+call to action changes per pack, so it picks up whatever they just learned.
+Edit those five in `CTA_BY_PACK` in `js/config.js`. Any pack you delete from
+that list quietly falls back to the main `CTA` block.
+
+**On the finish screen** they get the strongest version, outlined in green so
+it does not read as the same card a sixth time.
+
+Once somebody has signed up, the signup box never appears again. They just see
+the call to action. Nobody gets asked twice.
+
+**Sharing** uses the phone's own share sheet where there is one, falls back to
+copying to the clipboard, and falls back again to a box with the text already
+selected. The wording lives in the `SHARE` block in `js/config.js`, where
+`{pack}`, `{solved}`, `{total}`, `{points}`, `{streak}` and `{url}` are
+swapped for real numbers. Keep it short enough to paste into a WhatsApp
+status.
 
 ---
 
