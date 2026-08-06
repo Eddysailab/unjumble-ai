@@ -223,7 +223,7 @@ window.UNJUMBLE = window.UNJUMBLE || {};
 
       var bar = el("span", "pack-bar");
       bar.appendChild(el("span", "pack-fill", "", {
-        style: "width:" + (total ? Math.round((done / total) * 100) : 0) + "%"
+        style: "transform:scaleX(" + (total ? (done / total).toFixed(3) : 0) + ")"
       }));
       b.appendChild(bar);
       b.appendChild(el("span", "pack-count", done + " of " + total + " solved"));

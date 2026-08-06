@@ -166,7 +166,6 @@ a { color: var(--cyan-deep); font-weight: 800; }
   transition: border-color .15s ease, transform .12s var(--bounce);
   -webkit-tap-highlight-color: transparent;
 }
-.pill-toggle:hover { border-color: var(--green); transform: translateY(-1px); }
 .pill-toggle .ic { width: 19px; height: 19px; }
 .pill-toggle.off { color: var(--muted); border-style: dashed; }
 
@@ -223,7 +222,6 @@ a { color: var(--cyan-deep); font-weight: 800; }
   transition: transform .07s var(--bounce), box-shadow .07s ease, filter .15s ease;
   -webkit-tap-highlight-color: transparent;
 }
-.btn:hover { filter: brightness(1.03); }
 .btn:active { transform: translateY(4px); box-shadow: 0 0 0 var(--border-strong); }
 .btn.primary { background: var(--green); color: #fff; box-shadow: 0 4px 0 var(--green-deep); text-shadow: 0 1px 0 rgba(0,0,0,.14); }
 .btn.primary:active { box-shadow: 0 0 0 var(--green-deep); }
@@ -240,7 +238,6 @@ a { color: var(--cyan-deep); font-weight: 800; }
   cursor: pointer; padding: 8px 4px;
   -webkit-tap-highlight-color: transparent;
 }
-.link-btn:hover { color: var(--text); }
 .link-btn .ic { width: 17px; height: 17px; }
 
 /* -------------------------------- Cards ---------------------------------- */
@@ -362,7 +359,6 @@ a { color: var(--cyan-deep); font-weight: 800; }
   transition: transform .1s var(--bounce), box-shadow .1s ease, border-color .15s ease;
   -webkit-tap-highlight-color: transparent;
 }
-.pack-card:hover:not(.locked) { border-color: var(--accent); transform: translateY(-2px); }
 .pack-card:active:not(.locked) { transform: translateY(3px); box-shadow: 0 2px 0 var(--border-strong); }
 .pack-card.locked { opacity: .6; cursor: not-allowed; box-shadow: 0 5px 0 var(--border); }
 
@@ -390,10 +386,14 @@ a { color: var(--cyan-deep); font-weight: 800; }
   display: block; width: 100%; height: 8px; margin-top: 4px;
   background: var(--panel-2); border-radius: 999px; overflow: hidden;
 }
+/* Scaled rather than resized: transform runs on the GPU, animating width
+   would make the browser redo layout on every frame. */
 .pack-fill {
-  display: block; height: 100%; border-radius: 999px;
+  display: block; height: 100%; width: 100%; border-radius: 999px;
   background: var(--accent);
-  transition: width .4s var(--bounce);
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform .4s var(--bounce);
 }
 .pack-count { font-size: 11.5px; font-weight: 800; color: var(--muted); }
 
@@ -474,7 +474,8 @@ a { color: var(--cyan-deep); font-weight: 800; }
   box-shadow: 0 4px 0 var(--border-strong);
   cursor: pointer;
 }
-.slot.filled:hover:not(:disabled) { border-color: var(--green); transform: translateY(-2px); }
+/* Taking a letter back should feel like pressing something. */
+.slot.filled:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 var(--border-strong); }
 .slot.locked {
   background: color-mix(in srgb, var(--amber) 20%, var(--panel));
   border-color: var(--amber);
@@ -536,7 +537,6 @@ a { color: var(--cyan-deep); font-weight: 800; }
   transition: transform .1s var(--bounce), box-shadow .1s ease, border-color .15s ease, opacity .18s ease;
   -webkit-tap-highlight-color: transparent;
 }
-.tile:hover:not(:disabled) { border-color: var(--green); transform: translateY(-2px); }
 .tile:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--border-strong); }
 .tile.used {
   opacity: .22;
@@ -760,6 +760,23 @@ a { color: var(--cyan-deep); font-weight: 800; }
 /* Focus ring that stays visible for keyboard users. */
 :focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; border-radius: 8px; }
 
+/* ============================== Hover states =============================
+   Every hover effect in the game lives here, behind one guard.
+
+   A phone has no pointer to hover with, so it fakes one on tap. Without this
+   guard, tapping a letter tile leaves it stuck looking hovered until you tap
+   somewhere else, which reads as a stuck or selected tile. Since most people
+   play this on a phone, that was the most visible flaw in the whole UI.
+   ========================================================================= */
+@media (hover: hover) and (pointer: fine) {
+  .pill-toggle:hover { border-color: var(--green); transform: translateY(-1px); }
+  .btn:hover:not(:disabled) { filter: brightness(1.03); }
+  .link-btn:hover { color: var(--text); }
+  .pack-card:hover:not(.locked) { border-color: var(--accent); transform: translateY(-2px); }
+  .slot.filled:hover:not(:disabled) { border-color: var(--green); transform: translateY(-2px); }
+  .tile:hover:not(:disabled) { border-color: var(--green); transform: translateY(-2px); }
+}
+
 /* ============================== Responsive =============================== */
 @media (max-width: 420px) {
   .hero-title { font-size: 25px; }
@@ -784,10 +801,18 @@ a { color: var(--cyan-deep); font-weight: 800; }
   .tile { width: 34px; height: 41px; font-size: 19px; }
 }
 
+/* Reduced motion means fewer and gentler, not none. Nothing slides, scales or
+   bounces any more, but colour and opacity still fade, because those are what
+   tell you a tile filled in or a button turned off. Killing those too makes
+   state changes snap between frames and get harder to follow, not easier. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important;
+    animation-delay: 0ms !important;
+    /* Dropping transform from this list is what removes the movement. */
+    transition-property: opacity, color, background-color, border-color, box-shadow, filter !important;
+    transition-duration: 140ms !important;
   }
+  .confetti-layer, .points-burst, #bg-letters { display: none !important; }
 }
